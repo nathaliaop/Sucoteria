@@ -18,20 +18,30 @@
 
 pthread_mutex_t turno;
 
+//Número de cadeiras disponíveis
 sem_t sem_chairs;
+// Número de clientes no restaurante
 sem_t sem_clients;
+// Número de garçons disponíveis
 sem_t sem_waiters;
+// Pedidos do tipo A na lista de espera
 sem_t sem_orders_A;
+// Pedidos do tipo A prontos
 sem_t sem_dishes_A;
+// Pedidos do tipo B na lista de espera
 sem_t sem_orders_B;
+// Pedidos do tipo B prontos
 sem_t sem_dishes_B;
+// Pedidos do tipo C na lista de espera
 sem_t sem_orders_C;
+// Pedidos do tipo C prontos
 sem_t sem_dishes_C;
 
 void* cooker_A(void* v) {
   while(1) {
     // Espera ter um pedido para um prato do tipo A
     sem_wait(&sem_orders_A);
+    // Cozinha um prato do tipo A
     sem_post(&sem_dishes_A);
     printf("O cozinheiro A cozinhou um prato\n");
     sleep(TIME_COOK_A);
@@ -44,6 +54,7 @@ void* cooker_B(void* v) {
   while(1) {
     // Espera ter um pedido para um prato do tipo B
     sem_wait(&sem_orders_B);
+    // Cozinha um prato do tipo B
     sem_post(&sem_dishes_B);
     printf("O cozinheiro B cozinhou um prato\n");
     sleep(TIME_COOK_B);
@@ -56,6 +67,7 @@ void* cooker_C(void* v) {
   while(1) {
     // Espera ter um pedido para um prato do tipo C
     sem_wait(&sem_orders_C);
+    // Cozinha um prato do tipo C
     sem_post(&sem_dishes_C);
     printf("O cozinheiro C cozinhou um prato\n");
     sleep(TIME_COOK_C);
@@ -65,7 +77,7 @@ void* cooker_C(void* v) {
 }
 
 void serve_customer(int id) {
-      // Tipo do pedido do cliente
+    // Tipo do pedido do cliente
     char client_order = 'A' + rand() % 3;
 
     printf("O cliente %d pediu o prato %c\n", id, client_order);
@@ -84,6 +96,7 @@ void serve_customer(int id) {
     if (client_order == 'B') sem_wait(&sem_dishes_B);
     if (client_order == 'C') sem_wait(&sem_dishes_C);
 
+    // O garçom serve a refeição
     sem_wait(&sem_waiters);
     
     printf("Um garçom serviu a refeição %c ao cliente %d\n", client_order, id);
@@ -91,6 +104,7 @@ void serve_customer(int id) {
     // O garçom vai atender outros clientes
     sem_post(&sem_waiters);
     sleep(TIME_CUSTOMER_EAT);
+    // O garçom limpa a mesa do cliente
     sem_wait(&sem_waiters);
     printf("Um garçom está limpando a mesa do cliente %d\n", id);
     sleep(TIME_CLEAN_TABLE);
