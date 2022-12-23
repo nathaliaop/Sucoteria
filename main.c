@@ -37,7 +37,7 @@ sem_t sem_orders_C;
 // Pedidos do tipo C prontos
 sem_t sem_dishes_C;
 
-void* cooker_A(void* v) {
+void* cook_A(void* v) {
   while(1) {
     // Espera ter um pedido para um prato do tipo A
     sem_wait(&sem_orders_A);
@@ -50,7 +50,7 @@ void* cooker_A(void* v) {
   pthread_exit(0);
 }
 
-void* cooker_B(void* v) {
+void* cook_B(void* v) {
   while(1) {
     // Espera ter um pedido para um prato do tipo B
     sem_wait(&sem_orders_B);
@@ -63,7 +63,7 @@ void* cooker_B(void* v) {
   pthread_exit(0);
 }
 
-void* cooker_C(void* v) {
+void* cook_C(void* v) {
   while(1) {
     // Espera ter um pedido para um prato do tipo C
     sem_wait(&sem_orders_C);
@@ -137,7 +137,7 @@ void* client(void* v) {
 }
 
 int main() {
-  pthread_t thr_clients[N_CLIENTS], thr_cooker_A, thr_cooker_B, thr_cooker_C;
+  pthread_t thr_clients[N_CLIENTS], thr_cook_A, thr_cook_B, thr_cook_C;
   int i, id_client[N_CLIENTS];
 
   pthread_mutex_init(&turno, NULL);
@@ -153,9 +153,9 @@ int main() {
   sem_init(&sem_orders_C, 0, 0);
   sem_init(&sem_dishes_C, 0, 0);
 
-  pthread_create(&thr_cooker_A, NULL, cooker_A, NULL);
-  pthread_create(&thr_cooker_B, NULL, cooker_B, NULL);
-  pthread_create(&thr_cooker_C, NULL, cooker_C, NULL);
+  pthread_create(&thr_cook_A, NULL, cook_A, NULL);
+  pthread_create(&thr_cook_B, NULL, cook_B, NULL);
+  pthread_create(&thr_cook_C, NULL, cook_C, NULL);
   
   for (i = 0; i < N_CLIENTS; i++) {
     id_client[i] = i;
